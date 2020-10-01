@@ -1,4 +1,4 @@
-const { resolve } = require('path');
+const { resolve, join } = require('path');
 
 const { CheckerPlugin } = require('awesome-typescript-loader');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -7,6 +7,9 @@ const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 module.exports = {
   mode: 'development',
 
+  devServer: {
+    contentBase: join(__dirname, 'dist'),
+  },
   entry: './src/index.ts',
   output: {
     filename: 'bundle.js',
