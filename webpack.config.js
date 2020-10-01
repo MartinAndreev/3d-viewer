@@ -8,7 +8,7 @@ module.exports = {
   mode: 'development',
 
   devServer: {
-    contentBase: join(__dirname, 'dist'),
+    contentBase: join(__dirname, 'public'),
   },
   entry: './src/index.ts',
   output: {
