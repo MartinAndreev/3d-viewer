@@ -4,4 +4,58 @@ html,
 body {
   margin: 0;
   padding: 0;
+  position: relative;
+  font-family: "Roboto", sans-serif;
+}
+
+.materials {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background: #fff;
+  border: 1px solid #eee;
+  box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+  min-height: 200px;
+  min-width: 250px;
+  box-sizing: border-box;
+  padding: 15px;
+}
+
+.materials .textures__wrap {
+  border-bottom: 1px solid #eee;
+}
+
+.materials .textures__wrap:last-child {
+  border-bottom: none;
+}
+
+.materials .textures__wrap + .textures__wrap {
+  margin-top: 10px;
+}
+
+.materials .textures__wrap h4 {
+  margin: 0px;
+  padding: 0px;
+  font-weight: 400;
+}
+
+.materials .textures__wrap ul {
+  display: flex;
+  padding: 0px;
+}
+
+.materials .textures__wrap ul li {
+  list-style: none;
+}
+
+.materials .textures__wrap ul li + li {
+  margin-left: 10px;
+}
+
+.materials .textures__wrap img {
+  max-width: 30px;
+  max-height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
 }
