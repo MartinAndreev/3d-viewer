@@ -134,8 +134,8 @@ export class Viewer {
   private initCamera(): void {
     this.camera = new THREE.PerspectiveCamera(
       50,
-      window.innerWidth / window.innerHeight,
-      0.1,
+      this.container.clientWidth / this.container.clientHeight,
+      0.3,
       1000
     );
 
@@ -144,9 +144,20 @@ export class Viewer {
   }
 
   private initLight() {
-    this.light = new THREE.DirectionalLight(0xffeedd);
-    this.light.position.set(0, 0, 2);
-    this.scene.add(this.light);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.61);
+    hemiLight.position.set(0, 50, 0);
+    this.scene.add(hemiLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(-8, 12, 8);
+    dirLight.castShadow = true;
+    dirLight.shadow.camera.visible = false;
+    dirLight.shadow.bias = 0.0001;
+    dirLight.shadow.mapSize = new THREE.Vector2(1024, 1024);
+    this.scene.add(dirLight);
+
+    //const helper = new THREE.CameraHelper( dirLight.shadow.camera );
+    // this.scene.add( helper );
   }
 
   private initScene(): void {
@@ -154,24 +165,14 @@ export class Viewer {
     this.scene.background = new THREE.Color(0xf1f1f1);
     this.scene.fog = new THREE.Fog(0xf1f1f1);
 
-    var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.61);
-    hemiLight.position.set(0, 50, 0);
-    this.scene.add(hemiLight);
-
-    var dirLight = new THREE.DirectionalLight(0xffffff, 0.54);
-    dirLight.position.set(-8, 12, 8);
-    dirLight.castShadow = true;
-    dirLight.shadow.camera.visible = true;
-    dirLight.shadow.mapSize = new THREE.Vector2(1024, 1024);
-    this.scene.add(dirLight);
-
-    var floorGeometry = new THREE.PlaneGeometry(5000, 5000, 1, 1);
-    var floorMaterial = new THREE.MeshPhongMaterial({
+    const floorGeometry = new THREE.PlaneGeometry(5000, 5000, 10, 10);
+    const floorMaterial = new THREE.MeshPhongMaterial({
       color: 0xeeeeee,
       shininess: 0,
+      side: THREE.DoubleSide
     });
 
-    var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -0.5 * Math.PI;
     floor.receiveShadow = true;
     floor.position.y = -1;
@@ -184,12 +185,11 @@ export class Viewer {
       antialias: true,
     });
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
     this.renderer.setClearColor(0xffffff, 1);
     this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.renderer.shadowMap.enabled = true;
-    this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.container.appendChild(this.renderer.domElement);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -218,7 +218,7 @@ export class Viewer {
   private startAnimation() {
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
-    this.camera.updateProjectionMatrix();
+    //this.camera.updateProjectionMatrix();
 
     requestAnimationFrame(() => {
       this.startAnimation();
@@ -226,10 +226,10 @@ export class Viewer {
   }
 
   private onResize() {
-    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
     this.camera.updateProjectionMatrix();
 
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
   }
 
   public export() {
