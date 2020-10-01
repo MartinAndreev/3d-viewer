@@ -47,4 +47,14 @@ document.getElementById("auto-rotate").addEventListener("click", (e) => {
   viewer.getControls().autoRotate = target.checked;
 });
 
+document.getElementById("show-helpers").addEventListener("click", (e) => {
+  const target = e.target as HTMLFormElement;
+
+  if (target.checked) {
+    viewer.showHelpers();
+  } else {
+    viewer.removeHelpers();
+  }
+});
+
 viewer.init("./test.3ds", texturesMap);

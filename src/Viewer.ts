@@ -43,6 +43,8 @@ export class Viewer {
 
   private exporter: GLTFExporter;
 
+  private initialRotate = 0;
+
   constructor(container: HTMLDivElement) {
     this.container = container;
   }
@@ -159,6 +161,7 @@ export class Viewer {
     var dirLight = new THREE.DirectionalLight(0xffffff, 0.54);
     dirLight.position.set(-8, 12, 8);
     dirLight.castShadow = true;
+    dirLight.shadow.camera.visible = true;
     dirLight.shadow.mapSize = new THREE.Vector2(1024, 1024);
     this.scene.add(dirLight);
 
@@ -186,6 +189,7 @@ export class Viewer {
     this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.renderer.shadowMap.enabled = true;
     this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
     this.container.appendChild(this.renderer.domElement);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -214,6 +218,7 @@ export class Viewer {
   private startAnimation() {
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
+    this.camera.updateProjectionMatrix();
 
     requestAnimationFrame(() => {
       this.startAnimation();
@@ -249,5 +254,29 @@ export class Viewer {
 
   public getControls(): OrbitControls {
     return this.controls;
+  }
+
+  public showHelpers(): void {
+    const axesHelper = new THREE.AxesHelper(5);
+    axesHelper.name = "axisHelper";
+    this.scene.add(axesHelper);
+
+    const boxHelper = new THREE.BoxHelper(
+      this.scene.getObjectByName("furniture")
+    );
+
+    boxHelper.name = "boxHelper";
+    this.scene.add(boxHelper);
+
+    const gridHelper = new THREE.GridHelper(10, 10);
+
+    boxHelper.name = "gridHelper";
+    this.scene.add(gridHelper);
+  }
+
+  public removeHelpers(): void {
+    this.scene.remove(this.scene.getObjectByName("axisHelper"));
+    this.scene.remove(this.scene.getObjectByName("boxHelper"));
+    this.scene.remove(this.scene.getObjectByName("gridHelper"));
   }
 }
