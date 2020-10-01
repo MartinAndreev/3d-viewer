@@ -1,6 +1,25 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
+import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
+
+var link = document.createElement("a");
+link.style.display = "none";
+document.body.appendChild(link);
+
+function save(blob, filename) {
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+}
+
+function saveString(text, filename) {
+  save(new Blob([text], { type: "text/plain" }), filename);
+}
+
+function saveArrayBuffer(buffer, filename) {
+  save(new Blob([buffer], { type: "application/octet-stream" }), filename);
+}
 
 export class Viewer {
   private container: HTMLDivElement;
@@ -17,12 +36,15 @@ export class Viewer {
 
   private loader: FBXLoader;
 
+  private exporter: GLTFExporter;
+
   constructor(container: HTMLDivElement) {
     this.container = container;
   }
 
   public init(path: string, materialMapping: any) {
     this.loader = new FBXLoader();
+    this.exporter = new GLTFExporter();
 
     this.initCamera();
     this.initScene();
@@ -194,5 +216,26 @@ export class Viewer {
     this.camera.updateProjectionMatrix();
 
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  public export() {
+    this.exporter.parse(
+      this.scene.getObjectByName("furniture"),
+      (result) => {
+        if (result instanceof ArrayBuffer) {
+          saveArrayBuffer(result, "export.glb");
+        } else {
+          var output = JSON.stringify(result, null, 2);
+          console.log(output);
+          saveString(output, "export.gltf");
+        }
+      },
+      {
+        trs: false,
+        onlyVisible: true,
+        truncateDrawRange: true,
+        binary: false,
+      }
+    );
   }
 }

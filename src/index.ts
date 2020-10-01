@@ -38,4 +38,8 @@ document.querySelectorAll("[data-toggle]").forEach((e) => {
   });
 });
 
+document.getElementById("export").addEventListener("click", () => {
+  viewer.export();
+});
+
 viewer.init("./test.fbx", texturesMap);
