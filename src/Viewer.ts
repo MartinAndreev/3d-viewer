@@ -1,7 +1,12 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
+import { TDSLoader } from "three/examples/jsm/loaders/TDSLoader";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
+
+function degrees_to_radians(degrees) {
+  var pi = Math.PI;
+  return degrees * (pi / 180);
+}
 
 var link = document.createElement("a");
 link.style.display = "none";
@@ -34,7 +39,7 @@ export class Viewer {
 
   private light: THREE.DirectionalLight;
 
-  private loader: FBXLoader;
+  private loader: TDSLoader;
 
   private exporter: GLTFExporter;
 
@@ -43,7 +48,7 @@ export class Viewer {
   }
 
   public init(path: string, materialMapping: any) {
-    this.loader = new FBXLoader();
+    this.loader = new TDSLoader();
     this.exporter = new GLTFExporter();
 
     this.initCamera();
@@ -62,9 +67,9 @@ export class Viewer {
     const textureLoader = new THREE.TextureLoader();
 
     this.loader.load(path, (object) => {
-      object.scale.set(0.001, 0.001, 0.001);
-      object.rotation.y = Math.PI * 2;
-      object.position.y = -1;
+      object.scale.set(0.005, 0.005, 0.005);
+      object.rotation.x = degrees_to_radians(-90);
+      object.position.y = -0.88;
       object.name = "furniture";
 
       object.traverse(function (child: THREE.Mesh) {
@@ -99,10 +104,10 @@ export class Viewer {
       object.getWorldDirection(rotation);
 
       this.camera.lookAt(direction);
-      this.camera.position.setY(objectCenter.y);
-      this.camera.position.setX(objectCenter.x);
-      this.camera.position.setZ(this.camera.position.z / 2);
+      this.camera.position.z = 8;
+      this.camera.position.y = 2;
       this.controls.target = objectCenter;
+
       this.controls.update();
     });
   }
@@ -126,11 +131,12 @@ export class Viewer {
 
   private initCamera(): void {
     this.camera = new THREE.PerspectiveCamera(
-      100,
+      50,
       window.innerWidth / window.innerHeight,
       0.1,
-      5000
+      1000
     );
+
     this.camera.position.z = 5;
     this.camera.position.x = 0;
   }
@@ -144,6 +150,7 @@ export class Viewer {
   private initScene(): void {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xf1f1f1);
+    this.scene.fog = new THREE.Fog(0xf1f1f1);
 
     var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.61);
     hemiLight.position.set(0, 50, 0);
@@ -185,10 +192,12 @@ export class Viewer {
     this.controls.maxPolarAngle = Math.PI / 2;
     this.controls.minPolarAngle = Math.PI / 3;
     this.controls.enableDamping = true;
-    this.controls.enablePan = false;
+    this.controls.minDistance = 5;
+    this.controls.maxDistance = 20;
+    this.controls.enablePan = true;
     this.controls.dampingFactor = 0.1;
     this.controls.autoRotate = false; // Toggle this if you'd like the chair to automatically rotate
-    this.controls.autoRotateSpeed = 0.2; // 30
+    this.controls.autoRotateSpeed = 1; // 30
     this.controls.update();
   }
 
@@ -226,7 +235,6 @@ export class Viewer {
           saveArrayBuffer(result, "export.glb");
         } else {
           var output = JSON.stringify(result, null, 2);
-          console.log(output);
           saveString(output, "export.gltf");
         }
       },
@@ -237,5 +245,9 @@ export class Viewer {
         binary: false,
       }
     );
+  }
+
+  public getControls(): OrbitControls {
+    return this.controls;
   }
 }

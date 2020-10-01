@@ -69,3 +69,8 @@ body {
   margin-top: 15px;
   cursor: pointer;
 }
+
+label {
+  margin-bottom: 10px;
+  display: block;
+}

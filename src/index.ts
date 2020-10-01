@@ -42,4 +42,9 @@ document.getElementById("export").addEventListener("click", () => {
   viewer.export();
 });
 
-viewer.init("./test.fbx", texturesMap);
+document.getElementById("auto-rotate").addEventListener("click", (e) => {
+  const target = e.target as HTMLFormElement;
+  viewer.getControls().autoRotate = target.checked;
+});
+
+viewer.init("./test.3ds", texturesMap);
